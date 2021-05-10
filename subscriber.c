@@ -53,10 +53,10 @@ int main(int argc, char *argv[])
 	s = send(sockfd, argv[1], sizeof(argv[1]), 0);
 	DIE(s < 0, "send");	
 	
-	// se dezactiveaza algoritmul lui Neagle
+	// se dezactiveaza algoritmul lui Nagle
 	int flag = 1;
 	ret = setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(int));
-	DIE(ret < 0, "Neagle");
+	DIE(ret < 0, "Nagle");
 	
 	// se adauga in multime socket-ul pentru stdin si pentru server
 	FD_SET(STDIN_FILENO, &read_fds);
@@ -88,13 +88,51 @@ int main(int argc, char *argv[])
 						not_exit = false;
 						break;
 					}
-
+					
 					// a primit o alta comanda
-					char *copy_command = strdup(buffer);
+					char copy_command[BUFLEN];
+					strcpy(copy_command, buffer);
 					char *token;
 					token = strtok(copy_command, " ");
 
 					buffer[strlen(buffer) - 1] = '\0';
+
+					// se verifica daca comanda pe care a primit-o subscriber-ul este corecta
+					if (strncmp(token, "subscribe", 9) == 0) {
+						token = strtok(NULL, " ");
+
+						if (token == NULL) {
+							fprintf(stderr, "Topic is missing\n");
+							continue;
+
+						} else {
+
+							token = strtok(NULL, " ");
+
+							if (token == NULL) {
+								fprintf(stderr, "SF is missing\n");
+								continue;
+							
+							} else if (atoi(token) != 0 && atoi(token) != 1) {
+								fprintf(stderr, "SF must be 0 or 1\n");
+								continue;
+							} 
+
+						}
+
+					}  else if (strncmp(token, "unsubscribe", 11) == 0) {
+
+						token = strtok(NULL, " ");
+
+						if (token == NULL) {
+							fprintf(stderr, "Topic is missing\n");
+							continue;
+						}
+
+					} else {
+						fprintf(stderr, "Wrong command\n");
+						continue;	
+					}
 
 					// trimite comanda catre server
 					s = send(sockfd, buffer, sizeof(buffer), 0);
@@ -106,8 +144,6 @@ int main(int argc, char *argv[])
 					} else {
 						printf("Unsubscribed from topic.\n");
 					}
-
-					free(copy_command);
 
 				} else if (i == sockfd) {
 					
