@@ -2,9 +2,9 @@
 
 
 <h5>Calcan Elena-Claudia <br/>
-321CA</h5>
+321CA</h5><br>
 
-Programul reprezinta implementarea unui model client-server pentru gestionarea
+   Programul reprezinta implementarea unui model client-server pentru gestionarea
 mesajelor.
 
 
