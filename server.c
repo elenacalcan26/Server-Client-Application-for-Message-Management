@@ -124,10 +124,10 @@ int main(int argc, char *argv[])
 					newsockfd = accept(i, (struct sockaddr *)&cli_addr, &clilen);
 					DIE(newsockfd < 0, "accept");
 
-					// se dezativeaza algoritmul lui Neagle
+					// se dezativeaza algoritmul lui Nagle
 					int flag = 1;
 					ret = setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(int));
-					DIE(ret < 0, "Neagle");
+					DIE(ret < 0, "Nagle");
 
 					// noul socket este adaugat in multime
 					FD_SET(newsockfd, &read_fds);
@@ -356,6 +356,14 @@ int main(int argc, char *argv[])
 							break;
 						}
 					}
+					
+					// se actualizeaza fdmax
+					for (int j = fdmax; j > 2; j--) {
+						if (FD_ISSET(fdmax, &read_fds)) {
+							fdmax = j;
+							break;
+						}
+					}
 
 				} else {
 
@@ -443,7 +451,11 @@ int main(int argc, char *argv[])
 	
 	}
 	
-	close(sock_udp);
-	close(sockfd);
+	// se inchid socketii ramasi activi
+	for (int i = 2; i <= fdmax; i++) {
+		if (FD_ISSET(i, &read_fds)) {
+			close(i);
+		}
+	}
 	return 0;
 }
