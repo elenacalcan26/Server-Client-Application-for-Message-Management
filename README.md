@@ -5,7 +5,7 @@
 321CA</h5><br>
 
    Programul reprezinta implementarea unui model client-server pentru gestionarea
-mesajelor.
+mesajelor.<br/>
 
 
 server
@@ -50,7 +50,7 @@ server
 	subscriber-ul si sf-ul acestuia; daca mai primeste o comanda de subscribe 
 	pe un topic la care s-a abonat, dar are alt sf, atunci se inlocuieste sf-ul
 	topicului cu cel nou
-  - la comanda de unsubscribe, se sterge topicul si sf-ul acestuia din vectori 
+  - la comanda de unsubscribe, se sterge topicul si sf-ul acestuia din vectori <br/>
 
 
 
